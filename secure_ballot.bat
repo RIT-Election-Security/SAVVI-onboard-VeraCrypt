@@ -2,6 +2,18 @@
 :: This section reveals OS, hardware, and 
 ::networking configuration for the Windows VM.
 
+::preconditions: 
+:: 1) windows VM w/ veracrypt installed; 
+:: 2) windows has certutil enabled (it should be there by default); 
+:: 3) ballot is saved on the c:\ drive as ballot.dat; 
+:: 4) there's some biometric or other authentication signature saved as signature.dat
+:: 5) voter knows the ballot ID
+::postconditions: 
+:: 1) produces / displays the hash of the unencrypted ballot (HASH1)
+:: 2) encrypts the ballot with a randomly selected cipher/cipher cascade
+:: 3) produces / displays the hash of the encrypted ballot (HASH2)
+
+
 TITLE My System Info
 
 :: Section 1: Hashing the ballot before it's 
@@ -10,6 +22,7 @@ ECHO ==========================
 ECHO VERIFYING THE INTEGRITY OF YOUR BALLOT
 ECHO ==========================
 set HASH1= certutil -hashfile c:\ballot.dat SHA512
+ECHO %HASH1 > log.txt
 
 :: Section 2: Creating the encrypted container 
 ::that will store the ballot
@@ -18,11 +31,11 @@ ECHO MAKING YOUR BALLOT CONFIDENTIAL
 ECHO ==========================
 ECHO Enter the identification number of the 
 ECHO ballot you received today
-echo %PIN2%
+ECHO %PIN2%
 /create VOTE 
 /size 1M
 
-/k c:\biometric_signature.dat /k %PIN2%
+/k c:\signature.dat /k %PIN2%
 ::Specifies the key as a data file + pin
 
 SET /A RAND=%RANDOM% %% 15
@@ -51,4 +64,6 @@ ECHO ==========================
 ECHO MAKING YOUR VOTE PRIVATE
 ECHO ==========================
 set HASH2= certutil -hashfile BALLOT.vote SHA512
-ECHO Copy this exactly: %HASH2
+ECHO %HASH2 >> log.txt
+
+exit
