@@ -1,6 +1,4 @@
 @ECHO OFF 
-:: This section reveals OS, hardware, and 
-::networking configuration for the Windows VM.
 
 ::preconditions: 
 :: 1) windows VM w/ veracrypt installed; 
@@ -9,12 +7,10 @@
 :: 4) there's some biometric or other authentication signature saved as signature.dat
 :: 5) voter knows the ballot ID
 ::postconditions: 
-:: 1) produces / displays the hash of the unencrypted ballot (HASH1)
-:: 2) encrypts the ballot with a randomly selected cipher/cipher cascade
-:: 3) produces / displays the hash of the encrypted ballot (HASH2)
+:: 1) produces / logs the hash of the unencrypted ballot (HASH1)
+:: 2) encrypts the ballot with a randomly selected cipher/cipher cascade, saved in container VOTE
+:: 3) produces / logs the hash of the encrypted ballot container: VOTE (HASH2)
 
-
-TITLE My System Info
 
 :: Section 1: Hashing the ballot before it's 
 ::encrypted
@@ -63,7 +59,7 @@ if %RAND%==14 SET ENCR =Kuznyechik(Serpent
 ECHO ==========================
 ECHO MAKING YOUR VOTE PRIVATE
 ECHO ==========================
-set HASH2= certutil -hashfile BALLOT.vote SHA512
+set HASH2= certutil -hashfile VOTE SHA512
 ECHO %HASH2 >> log.txt
 
 exit
